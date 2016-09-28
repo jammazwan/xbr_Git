@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.eclipse.jgit.api.Status;
 
 
 public class XbrRoutes extends RouteBuilder {
@@ -21,5 +22,20 @@ public class XbrRoutes extends RouteBuilder {
                     exchange.getOut().setBody(newAnswer);
                 }
             });
+    	from("direct:resolvePropertyPlaceholders").process(new Processor() {
+    		public void process(Exchange exchange) throws Exception {
+    			String text = exchange.getIn().getBody(String.class);
+    			String newAnswer = text + " " + getContext().resolvePropertyPlaceholders("{{gitusername}}");
+    			exchange.getOut().setBody(newAnswer);
+    		}
+    	});
+    	from("direct:start")
+        .to("git://.?operation=status").process(new Processor() {
+    		public void process(Exchange exchange) throws Exception {
+    			Status response = exchange.getIn().getBody(Status.class);
+    			String newAnswer = response.isClean() + " " + getContext().resolvePropertyPlaceholders("{{gitusername}}");
+    			exchange.getOut().setBody(newAnswer);
+    		}
+    	});
     }
 }

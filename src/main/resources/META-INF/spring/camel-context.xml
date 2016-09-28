@@ -15,6 +15,7 @@
     <bean id="xbrRoutes" class="jammazwan.xbr.XbrRoutes"/>
 
     <camelContext id="xbr" xmlns="http://camel.apache.org/schema/spring">
+		<propertyPlaceholder id="gitproperties" location="classpath:git.properties" />
         <routeBuilder ref="xbrRoutes"/>
     </camelContext>
 

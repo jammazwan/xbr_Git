@@ -1,1 +1,2 @@
 *.sh
+src/main/resources/git.properties
